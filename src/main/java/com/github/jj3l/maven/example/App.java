@@ -1,10 +1,10 @@
-package com.github.jj3l.maven-example;
+package com.github.jj3l.maven.example;
 
 /**
  * Hello world!
  *
  */
-public class App 
+public class App
 {
     public static void main( String[] args )
     {

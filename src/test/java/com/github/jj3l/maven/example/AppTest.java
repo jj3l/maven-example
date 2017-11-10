@@ -1,4 +1,4 @@
-package com.github.jj3l.maven-example;
+package com.github.jj3l.maven.example;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
