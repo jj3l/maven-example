@@ -4,12 +4,17 @@ artifactId: maven-example
 version: 1.0-SNAPSHOT
 packaging: jar
 name: maven-example
-url: http://maven.apache.org
+url: https://maven.apache.org/
 dependencies:
-- {groupId: junit, artifactId: junit, version: 3.8.1, scope: test}
+- groupId: junit
+  artifactId: junit
+  version: 3.8.1
+  scope: test
 build:
   plugins:
   - groupId: org.apache.maven.plugins
     artifactId: maven-compiler-plugin
     version: 3.1
-    configuration: {source: 1.6, target: 1.6}
+    configuration:
+      source: 1.6
+      target: 1.6
