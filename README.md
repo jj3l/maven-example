@@ -44,3 +44,27 @@ EOF
 
 The last line from `pom.yml` (`pomFile: {}`) must be removed.
 
+## Minimal project configurations
+
+Maven is not able to run with [minimal POM](
+https://maven.apache.org/guides/introduction/introduction-to-the-pom.html#Minimal_POM) without errors and 
+warnings. The following adjustments to the [super POM](
+https://maven.apache.org/guides/introduction/introduction-to-the-pom.html#Super_POM) are necessary:
+* Set Java version to 1.6 for the Java Compiler.
+* Specify the Version of the project info report plugin.
+
+```yml
+build:
+  plugins:
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-project-info-reports-plugin
+    version: 2.8.1
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-compiler-plugin
+    version: 3.1
+    configuration:
+      source: 1.6
+      target: 1.6
+```
+
+
