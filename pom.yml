@@ -1,5 +1,5 @@
 modelVersion: 4.0.0
-groupId: com.github.jj3l.maven-example
+groupId: com.github.jj3l
 artifactId: maven-example
 version: 1.0-SNAPSHOT
 packaging: jar
