@@ -5,6 +5,8 @@ version: 1.0-SNAPSHOT
 packaging: jar
 name: maven-example
 url: https://maven.apache.org/
+properties:
+  project.build.sourceEncoding: UTF-8
 dependencies:
 - groupId: junit
   artifactId: junit
@@ -12,6 +14,9 @@ dependencies:
   scope: test
 build:
   plugins:
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-project-info-reports-plugin
+    version: 2.8.1
   - groupId: org.apache.maven.plugins
     artifactId: maven-compiler-plugin
     version: 3.1
