@@ -4,7 +4,12 @@ artifactId: maven-example
 version: 1.0-SNAPSHOT
 packaging: jar
 name: maven-example
-url: https://maven.apache.org/
+url: https://jj3l.github.io/maven-example/
+scm:
+  connection: 'scm:git:https://github.com/jj3l/maven-example.git'
+  developerConnection: 'scm:git:git://github.com:jj3l/maven-example.git'
+  tag: HEAD
+  url: 'https://github.com/jj3l/maven-example/'
 properties:
   project.build.sourceEncoding: UTF-8
 dependencies:
@@ -23,3 +28,19 @@ build:
     configuration:
       source: 1.6
       target: 1.6
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-site-plugin
+    version: 3.6
+    configuration:
+      skipDeploy: true
+  - groupId: com.github.github
+    artifactId: site-maven-plugin
+    version: 0.12
+    executions:
+    - goals:
+      - site
+      phase: site-deploy
+      configuration:
+        server: github
+        message: Create project website for ${project.version}.
+    
