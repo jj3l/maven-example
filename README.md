@@ -98,7 +98,7 @@ cat << 'EOF' > ~/.m2/settings.xml
   </servers>
 </settings>
 EOF
-``
+```
 
 There are two things important here:
 1. The credentials will be referenced by the ID `github`.
@@ -157,3 +157,52 @@ will be found.
 Weblinks:
 * https://help.github.com/articles/user-organization-and-project-pages/
 * https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/
+
+## Create Site Descriptor
+
+Run `mvn site:effective-site` to view the default site descriptor:
+
+```xml
+<project
+  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.7.0 http://maven.apache.org/xsd/decoration-1.7.0.xsd"
+  name="maven-example"
+  xmlns="http://maven.apache.org/DECORATION/1.7.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ >
+  <bannerLeft>
+    <name>maven-example</name>
+  </bannerLeft>
+  <publishDate />
+  <version />
+  <body>
+    <links>
+      <item name="maven-example" href="./" />
+    </links>
+    <menu ref="parent" />
+    <menu ref="reports" />
+  </body>
+</project>
+```
+
+Add a [contemporary skin](https://maven.apache.org/skins/maven-fluido-skin/) built on [Bootstrap](
+https://getbootstrap.com/):
+
+```xml
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.5</version>
+  </skin>
+```
+
+There is [another  skin](https://github.com/andriusvelykis/reflow-maven-skin) built on [Bootstrap](
+https://getbootstrap.com/). But even this one was last edited three years ago and has [some issues with TLS
+resources](https://github.com/andriusvelykis/reflow-maven-skin/issues/50). So best for now will be to choose
+`maven-fluido-skin`.
+
+See [Site Descriptor](https://maven.apache.org/doxia/doxia-sitetools/doxia-decoration-model/decoration.html) 
+documentation for further details.
+
+Since v3.3 of the `maven-site-plugin` Markdown syntax is supported without declaring a [Doxia](
+https://maven.apache.org/doxia/references/) dependency explicitly. Add a Markdown document to `src/site/markdown`.
+With an additional suffix `.vm` filtering is supported (resolve e.g. ${project.name}).
