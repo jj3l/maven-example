@@ -1,0 +1,34 @@
+<project
+  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.7.0 http://maven.apache.org/xsd/decoration-1.7.0.xsd" 
+  name="maven-example" 
+  xmlns="http://maven.apache.org/DECORATION/1.7.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ >
+  <bannerLeft>
+    <name>maven-example</name>
+  </bannerLeft>
+  <publishDate />
+  <version />
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.5</version>
+  </skin>
+  <custom>
+    <fluidoSkin>
+      <gitHub>
+        <projectId>jj3l/maven-example</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>red</ribbonColor>
+      </gitHub>
+      <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+    </fluidoSkin>
+  </custom>
+  <body>
+    <menu name="Development">
+      <item name="Readme" href="${project.url}"/>
+    </menu>
+    <menu ref="parent" />
+    <menu ref="reports" />
+  </body>
+</project>
