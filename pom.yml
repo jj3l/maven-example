@@ -43,4 +43,9 @@ build:
       configuration:
         server: github
         message: Create project website for ${project.version}.
-    
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-source-plugin
+    executions:
+    - id: attach-sources
+      goals:
+      - jar
