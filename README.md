@@ -97,6 +97,45 @@ build:
       - jar
 ```
 
+## Enforce project model
+
+Certain aspects of the project model [can be enforced](https://maven.apache.org/enforcer/maven-enforcer-plugin/).
+There are even more aspect which could be enforced but are not supported by the plugin.
+
+* Normalization of the POM (to reduce merge conflicts, make POM better readable). Partly solved by the 
+  [tidy-maven-plugin](http://www.mojohaus.org/tidy-maven-plugin/).
+* Deprecated/vulnerable dependencies/plugins could be bannend.
+* Version is compliant to [semantic versioning](http://semver.org/).
+* There is a changelog compliant to [keep a changelog](http://keepachangelog.com/en/1.0.0/).
+
+Add to `pom.yml`:
+
+```yml
+build:
+  plugins:
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-enforcer-plugin
+    version: 3.0.0-M1
+    executions:
+    - id: no-duplicate-declared-dependencies
+      goals:
+      - enforce
+      configuration:
+        rules:
+          banDuplicatePomDependencyVersions: ''
+    - id: enforce
+      goals:
+      - enforce
+      configuration:
+        rules:
+          dependencyConvergence: ''
+```
+
+## Deploy to Maven central
+
+* http://central.sonatype.org/
+* http://central.sonatype.org/pages/ossrh-guide.html
+
 ## Deploy project website to GitHub repository
 
 You need an OAuth2 access token to allow Maven to publish the project website to GitHub on a behalf of you. Each

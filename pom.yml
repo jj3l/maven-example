@@ -55,3 +55,19 @@ build:
     - id: attach-javadocs
       goals:
       - jar
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-enforcer-plugin
+    version: 3.0.0-M1
+    executions:
+    - id: no-duplicate-declared-dependencies
+      goals:
+      - enforce
+      configuration:
+        rules:
+          banDuplicatePomDependencyVersions: ''
+    - id: enforce
+      goals:
+      - enforce
+      configuration:
+        rules:
+          dependencyConvergence: ''
