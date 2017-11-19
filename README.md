@@ -82,6 +82,21 @@ build:
       - jar
 ```
 
+## Create Java-Doc JAR
+
+Add to `pom.yml`:
+
+```yml
+build:
+  plugins:
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-javadoc-plugin
+    executions:
+    - id: attach-javadocs
+      goals:
+      - jar
+```
+
 ## Deploy project website to GitHub repository
 
 You need an OAuth2 access token to allow Maven to publish the project website to GitHub on a behalf of you. Each

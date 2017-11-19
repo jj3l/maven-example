@@ -49,3 +49,9 @@ build:
     - id: attach-sources
       goals:
       - jar
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-javadoc-plugin
+    executions:
+    - id: attach-javadocs
+      goals:
+      - jar
