@@ -67,6 +67,21 @@ build:
       target: 1.6
 ```
 
+## Create sources JAR
+
+Add to `pom.yml`:
+
+```yml
+build:
+  plugins:
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-source-plugin
+    executions:
+    - id: attach-sources
+      goals:
+      - jar
+```
+
 ## Deploy project website to GitHub repository
 
 You need an OAuth2 access token to allow Maven to publish the project website to GitHub on a behalf of you. Each
