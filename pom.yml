@@ -71,3 +71,9 @@ build:
       configuration:
         rules:
           dependencyConvergence: ''
+  - groupId: org.owasp
+    artifactId: dependency-check-maven
+    version: 3.0.2
+    executions:
+    - goals:
+      - check
