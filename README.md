@@ -97,6 +97,29 @@ build:
       - jar
 ```
 
+## OWASP Dependency check
+
+The [OWASP Dependency check](https://www.owasp.org/index.php/OWASP_Dependency_Check) checks all dependencies for 
+known security risks.
+
+Add to `pom.yml`:
+
+```yml
+build:
+  plugins:
+  - groupId: org.owasp
+    artifactId: dependency-check-maven
+    version: 3.0.2
+    executions:
+    - goals:
+      - check
+```
+
+See https://jeremylong.github.io/DependencyCheck/dependency-check-maven/ and [Automatisierte Überprüfung von
+Sicherheitslücken in Abhängigkeiten von Java-Projekten](
+https://www.triology.de/blog/automatisierte-ueberpruefung-von-sicherheitsluecken-in-abhaengigkeiten-von-java-projekten)
+(german).
+
 ## Enforce project model
 
 Certain aspects of the project model [can be enforced](https://maven.apache.org/enforcer/maven-enforcer-plugin/).
