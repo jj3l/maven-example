@@ -154,6 +154,44 @@ build:
           dependencyConvergence: ''
 ```
 
+##  Add license informations
+
+[Add license informations](http://www.mojohaus.org/license-maven-plugin/) to each file and add a license file.
+
+Add to `pom.yml`:
+
+```yml
+build:
+  plugins:
+  - groupId: org.codehaus.mojo
+    artifactId: license-maven-plugin
+    version: 1.14
+    configuration:
+      licenseName: apache_v2
+      addJavaLicenseAfterPackage: false
+      canUpdateCopyright: true
+      canUpdateDescription: true
+      canUpdateLicense: true
+      emptyLineAfterHeader: true
+      extraFiles:
+        DockerFile: properties
+      processStartTag: 'LICENSE_START'
+      processEndTag: 'LICENSE_END'
+      sectionDelimiter: '**'
+    executions:
+    - id: first
+      goals:
+      - update-file-header
+      phase: process-sources
+    - id: second
+      goals:
+      - update-project-license      
+```
+
+It would be appreciated to remove `processStartTag`, `processEndTag` and `sectionDelimitersectionDelimiter` (the 
+first section is not required). Trailing spaces should be removed. A `LICENSE.md` would be preferred over 
+`LICENSE.txt`. The placeholder `Copyright [yyyy] [name of copyright owner]` will not be replaced.
+
 ## Deploy to Maven central
 
 * http://central.sonatype.org/

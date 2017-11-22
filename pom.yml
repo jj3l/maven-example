@@ -5,6 +5,9 @@ version: 1.0-SNAPSHOT
 packaging: jar
 name: maven-example
 url: https://jj3l.github.io/maven-example/
+organization:
+  name: Jäkel
+inceptionYear: 2017
 scm:
   connection: 'scm:git:https://github.com/jj3l/maven-example.git'
   developerConnection: 'scm:git:git://github.com:jj3l/maven-example.git'
@@ -77,3 +80,26 @@ build:
     executions:
     - goals:
       - check
+  - groupId: org.codehaus.mojo
+    artifactId: license-maven-plugin
+    version: 1.14
+    configuration:
+      licenseName: apache_v2
+      addJavaLicenseAfterPackage: false
+      canUpdateCopyright: true
+      canUpdateDescription: true
+      canUpdateLicense: true
+      emptyLineAfterHeader: true
+      extraFiles:
+        DockerFile: properties
+      processStartTag: 'LICENSE_START'
+      processEndTag: 'LICENSE_END'
+      sectionDelimiter: '**'
+    executions:
+    - id: first
+      goals:
+      - update-file-header
+      phase: process-sources
+    - id: second
+      goals:
+      - update-project-license      
