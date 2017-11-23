@@ -336,3 +336,8 @@ documentation for further details.
 Since v3.3 of the `maven-site-plugin` Markdown syntax is supported without declaring a [Doxia](
 https://maven.apache.org/doxia/references/) dependency explicitly. Add a Markdown document to `src/site/markdown`.
 With an additional suffix `.vm` filtering is supported (resolve e.g. ${project.name}).
+
+## CircleCI
+
+Run tests at CircleCI. See [`.circleci/config.yml`](https://circleci.com/docs/2.0/configuration-reference/) for 
+CircleCI configuration.
