@@ -102,4 +102,10 @@ build:
       phase: process-sources
     - id: second
       goals:
-      - update-project-license      
+      - update-project-license
+# Required by com.github.github:github-maven-plugins-parent
+# https://github.com/github/maven-plugins/blob/master/pom.xml
+repositories:
+- id: egit
+  name: Eclipse egit
+  url: https://repo.eclipse.org/content/repositories/egit-releases/
