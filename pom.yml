@@ -48,12 +48,14 @@ build:
         message: Create project website for ${project.version}.
   - groupId: org.apache.maven.plugins
     artifactId: maven-source-plugin
+    version: 3.0.1
     executions:
     - id: attach-sources
       goals:
       - jar
   - groupId: org.apache.maven.plugins
     artifactId: maven-javadoc-plugin
+    version: 2.10.3
     executions:
     - id: attach-javadocs
       goals:
@@ -94,7 +96,7 @@ build:
         DockerFile: properties
       processStartTag: 'LICENSE_START'
       processEndTag: 'LICENSE_END'
-      sectionDelimiter: '**'
+      sectionDelimiter: 'xx'
     executions:
     - id: first
       goals:
