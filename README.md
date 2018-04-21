@@ -50,22 +50,22 @@ Maven is not able to run with [minimal POM](
 https://maven.apache.org/guides/introduction/introduction-to-the-pom.html#Minimal_POM) without errors and 
 warnings. The following adjustments to the [super POM](
 https://maven.apache.org/guides/introduction/introduction-to-the-pom.html#Super_POM) are necessary:
+
 * Set Java version to 1.6 for the Java Compiler.
 * Specify the Version of the project info report plugin.
-
-```yml
-build:
-  plugins:
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-project-info-reports-plugin
-    version: 2.8.1
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-compiler-plugin
-    version: 3.1
-    configuration:
-      source: 1.6
-      target: 1.6
-```
+  ```yml
+  build:
+    plugins:
+    - groupId: org.apache.maven.plugins
+      artifactId: maven-project-info-reports-plugin
+      version: 2.8.1
+    - groupId: org.apache.maven.plugins
+      artifactId: maven-compiler-plugin
+      version: 3.1
+      configuration:
+        source: 1.6
+        target: 1.6
+  ```
 
 ## Create sources JAR
 
@@ -192,10 +192,183 @@ It would be appreciated to remove `processStartTag`, `processEndTag` and `sectio
 first section is not required). Trailing spaces should be removed. A `LICENSE.md` would be preferred over 
 `LICENSE.txt`. The placeholder `Copyright [yyyy] [name of copyright owner]` will not be replaced.
 
-## Deploy to Maven central
+## Release process
 
-* http://central.sonatype.org/
-* http://central.sonatype.org/pages/ossrh-guide.html
+One of the most powerful features of Maven is the repository concept to store packaged Java artefacts like JAR
+files. The default repository where dependencies are looked up is known as [Maven Central Repository](
+https://repo.maven.apache.org/maven2). By default the Maven Central Repository is available at
+https://repo.maven.apache.org/maven2. There are multiple mirrors like https://repo1.maven.org/maven2 or (local)
+company repositories.
+
+### Publish to Maven Central Repository
+
+To publish artefacts to Maven Central some [requirements](http://central.sonatype.org/pages/requirements.html)
+need to be met.
+
+1. Choose a `groupId` as your global unique namespace. Similar to the [Java package naming convention](
+   http://docs.oracle.com/javase/tutorial/java/package/namingpkgs.html) it reuses the DNS in a reversed manner.
+   This means you need a domain name you control. This could be any registered second level Domain. But a third
+   level domain from your GitHub account like `jj3l.github.com` will be [sufficient](
+   https://issues.sonatype.org/browse/OSSRH-36150). Having a `groupId` you have to use the `groupId` in your POM
+   and to [signup](https://issues.sonatype.org/secure/Signup!default.jspa) for Sonatype Jira and [register](
+   https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134) the `groupId` to be used publishing
+   artefacts in the Maven Central Repository with.
+ 1. Make your Sonatype Jira credentials available to Maven as they are used for OSSRH as well. Add to
+    `~/.m2/settings.xml`:
+    ```xml
+    <settings>
+      <servers>
+        <server>
+          <id>ossrh</id>
+          <username>jjaekel</username>
+          <password>1password</password>
+        </server>
+      </servers>
+    </settings>
+    ```
+ 2. Add to `pom.yml`:
+    ```yml
+    distributionManagement:
+      snapshotRepository:
+        id: ossrh
+        url: https://oss.sonatype.org/content/repositories/snapshots
+    build:
+      plugins:
+      - groupId: org.sonatype.plugins
+        artifactId: nexus-staging-maven-plugin
+        version: 1.6.7
+        extensions: true
+        configuration:
+          serverId: ossrh
+          nexusUrl: https://oss.sonatype.org/
+          autoReleaseAfterClose: true
+    ```
+    The `nexus-staging-maven-plugin` replaces the `maven-deploy-plugin`.
+ 3. Add to `pom.yml`:
+    ```yml
+    build:
+      plugins:
+      - groupId: org.apache.maven.plugins
+        artifactId: maven-release-plugin
+        version: 2.5.3
+        configuration:
+          autoVersionSubmodules: true
+          useReleaseProfile: false
+          releaseProfiles: release
+          goals: deploy
+    ```
+2. Generate a GPG key pair and publish the pubic key so everybody can verify the artefacts you signed with your
+   private key.
+ 1. Install [GPG Suite](https://gpgtools.org/) with MacGPG. The Maven GPG plugin does not have a Java GPG
+    implementation and needs the `gpg` executeable on the `PATH`.
+ 2. Generate GPG key pair:
+    ```bash
+    gpg --batch --gen-key << EOF
+    Key-Type: RSA
+    Key-Length: 4096
+    Subkey-Type: RSA
+    Subkey-Length: 4096
+    Name-Real: Jonathan Jäkel
+    Name-Email: j@j3l.de
+    Expire-Date: 0
+    Passphrase: <1password>
+    EOF
+    ```
+  3. Get key ID:
+     ```bash
+     gpg --list-keys
+     pub   rsa4096 2017-12-03 [SCEA]
+           183303E02CCE0907450FE9370046FC88CB105E68 <-- Key ID
+     ```
+  4. Publish public key
+     ```bash
+     gpg --keyserver hkp://pgp.mit.edu --send-keys 183303E02CCE0907450FE9370046FC88CB105E68
+     ```
+  5. Configure the Maven GPG Plugin in your `pom.yml`:
+     ```yml
+     build:
+       plugins:
+       - groupId: org.apache.maven.plugins
+         artifactId: maven-gpg-plugin
+         executions:
+         - id: sign-artifacts
+           phase: verify
+           goals:
+           - sign
+           configuration:
+             keyname: ${gpg.keyname}
+             passphraseServerId: ${gpg.keyname}
+     ```
+  6. To sign the GPG key passphrase has to specified as command line argument
+     `mvn verify -Dgpg.passphrase=thephrase` or it will be prompted for. Even better would be to define the
+     passphrase  in the `settings.xml`. Add to `~/.m2/settings.xml`:
+     ```xml
+     <settings>
+       <servers>
+         <server>
+           <id>183303E02CCE0907450FE9370046FC88CB105E68</id>
+           <passphrase>1password</passphrase>
+         </server>
+       </servers>
+       <profiles>
+         <profile>
+           <activation>
+             <activeByDefault>true</activeByDefault>
+           </activation>
+           <properties>
+             <gpg.keyname>183303E02CCE0907450FE9370046FC88CB105E68</gpg.keyname>
+           </properties>
+         </profile>
+       </profiles>
+     </settings>
+     ```
+     You can sign explicitly by running `JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn clean verify` but you will
+     sign regularly implicit using `JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn release:perform` later.
+     You will find the generated signatures in `target/maven-example-*.*.asc`.
+3. Using [semantic versioning](http://semver.org/) is not required but [recommended](
+   http://central.sonatype.org/pages/choosing-your-coordinates.html).
+
+### Snapshot Artefact vs. Release Artefacts
+
+By convention the snapshot versions are used with Maven. Think of a "release candidate" for a snapshot version.
+`1.0.0-SNASHOT` is the release candidate for release `v1.0.0`. Artifacts build on a snapshot version can be
+deployed to the [Sonatype snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/) but will
+not be synchronized to Maven central. The version in the `pom.yml` will not be changed and no tag at GitHub will
+be set. To issue a release some more steps are required as it must be switched from current snapshot version to a
+release version and the next snapshots version must be bumped.
+
+### Publish Snapshot Artefacts
+
+To deploy a snapshot version run:
+```bash
+JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn clean deploy
+```
+
+### Publish Release Artefacts
+
+There are multiple steps to issue a release:
+
+1. Run `JAVA_HOME=$(/usr/libexec/java_home -v 1.8)  mvn clean release:prepare`. This removes the current
+   `-SNAPSHOT` suffix from the project version, commit and tag the code on GitHub. Then the project version is set
+   to next snapshot version. For `1.0.0-SNAPSHOT` the project version mutates to `1.0.0` and finally to
+   `1.1.0-SNAPSHOT`.
+2. Run `mvn release:perform`. This creates the binary artifact, sign the artifact with a GPG key and publish the
+   artifact to the Sonatype Open Source Software Repository Hosting (OSSRH) which will be synchronized to Maven
+   central.
+
+To switch to a new major version you have to edit the POM manually.
+
+### Links
+
+* https://maven.apache.org/repository/
+* https://blog.sonatype.com/2010/10/new-official-maven-central-repository-in-europe/
+ * http://central.sonatype.org/pages/ossrh-guide.html
+ * http://central.sonatype.org/pages/choosing-your-coordinates.html
+* http://central.sonatype.org/pages/apache-maven.html
+* http://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/.
+* https://maven.apache.org/plugins/maven-gpg-plugin/usage.html
+* https://maven.apache.org/plugins/maven-release-plugin/
+* https://maven.apache.org/plugins/maven-jarsigner-plugin/
 
 ## Deploy project website to GitHub repository
 

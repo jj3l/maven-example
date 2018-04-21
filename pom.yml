@@ -105,9 +105,39 @@ build:
     - id: second
       goals:
       - update-project-license
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-gpg-plugin
+    executions:
+    - id: sign-artifacts
+      phase: verify
+      goals:
+      - sign
+      configuration:
+        keyname: ${gpg.keyname}
+        passphraseServerId: ${gpg.keyname}
+  - groupId: org.sonatype.plugins
+    artifactId: nexus-staging-maven-plugin
+    version: 1.6.7
+    extensions: true
+    configuration:
+      serverId: ossrh
+      nexusUrl: https://oss.sonatype.org/
+      autoReleaseAfterClose: false
+  - groupId: org.apache.maven.plugins
+    artifactId: maven-release-plugin
+    version: 2.5.3
+    configuration:
+      autoVersionSubmodules: true
+      useReleaseProfile: false
+      releaseProfiles: release
+      goals: deploy
 # Required by com.github.github:github-maven-plugins-parent
 # https://github.com/github/maven-plugins/blob/master/pom.xml
 repositories:
 - id: egit
   name: Eclipse egit
   url: https://repo.eclipse.org/content/repositories/egit-releases/
+distributionManagement:
+  snapshotRepository:
+    id: ossrh
+    url: https://oss.sonatype.org/content/repositories/snapshots
