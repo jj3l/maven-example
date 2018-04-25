@@ -66,6 +66,22 @@ https://maven.apache.org/guides/introduction/introduction-to-the-pom.html#Super_
         source: 1.6
         target: 1.6
   ```
+* Add informations required to deploy to the Maven Central Repository 
+  ```yml
+  description: This is an example project to demonstrate Maven usage and configuration.
+  developers:
+  - id: jjaekel
+    name: Jonathan Jäkel
+    email: j@j3l.de
+    organization: Jonathan Jäkel
+    organizationUrl: 'https://www.j3l.de/'
+    roles: [Developer]
+    timezone: +1
+  licenses:
+  - name: Apache License, Version 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+    distribution: repo
+  ```
 
 ## Create sources JAR
 

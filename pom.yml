@@ -1,13 +1,26 @@
 modelVersion: 4.0.0
 groupId: com.github.jj3l
 artifactId: maven-example
-version: 1.0.0-SNAPSHOT
+version: 1.0.0
 packaging: jar
 name: maven-example
+description: This is an example project to demonstrate Maven usage and configuration.
 url: https://jj3l.github.io/maven-example/
 organization:
   name: Jäkel
+developers:
+- id: jjaekel
+  name: Jonathan Jäkel
+  email: j@j3l.de
+  organization: Jonathan Jäkel
+  organizationUrl: 'https://www.j3l.de/'
+  roles: [Developer]
+  timezone: +1
 inceptionYear: 2017
+licenses:
+- name: Apache License, Version 2.0
+  url: https://www.apache.org/licenses/LICENSE-2.0.txt
+  distribution: repo
 scm:
   connection: 'scm:git:https://github.com/jj3l/maven-example.git'
   developerConnection: 'scm:git:git@github.com:jj3l/maven-example.git'
