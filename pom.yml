@@ -124,14 +124,6 @@ build:
       serverId: ossrh
       nexusUrl: https://oss.sonatype.org/
       autoReleaseAfterClose: false
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-release-plugin
-    version: 2.5.3
-    configuration:
-      autoVersionSubmodules: true
-      useReleaseProfile: false
-      releaseProfiles: release
-      goals: deploy
 # Required by com.github.github:github-maven-plugins-parent
 # https://github.com/github/maven-plugins/blob/master/pom.xml
 repositories:

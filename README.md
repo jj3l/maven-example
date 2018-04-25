@@ -226,7 +226,11 @@ need to be met.
       </servers>
     </settings>
     ```
- 2. Add to `pom.yml`:
+ 2. The Sonatype Jira credentials will be referenced by the id `ossrh`. One time from the `maven-deploy-plugin`
+    via the `distributionManagement` releasing snapshot releases and one time from the 
+    `nexus-staging-maven-plugin` configuration releasing production releases (see [Snapshot Artefact vs. Release 
+    Artefacts](#snapshot-artefact-vs-release-artefacts) for details). 
+    Add to `pom.yml`:
     ```yml
     distributionManagement:
       snapshotRepository:
@@ -243,7 +247,6 @@ need to be met.
           nexusUrl: https://oss.sonatype.org/
           autoReleaseAfterClose: true
     ```
-    The `nexus-staging-maven-plugin` replaces the `maven-deploy-plugin`.
  3. Add to `pom.yml`:
     ```yml
     build:
@@ -330,15 +333,23 @@ need to be met.
 
 ### Snapshot Artefact vs. Release Artefacts
 
-By convention the snapshot versions are used with Maven. Think of a "release candidate" for a snapshot version.
-`1.0.0-SNASHOT` is the release candidate for release `v1.0.0`. Artifacts build on a snapshot version can be
-deployed to the [Sonatype snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/) but will
-not be synchronized to Maven central. The version in the `pom.yml` will not be changed and no tag at GitHub will
-be set. To issue a release some more steps are required as it must be switched from current snapshot version to a
-release version and the next snapshots version must be bumped.
+Maven distinguish between snapshot and production releases. Production releases use common versioning schemes (
+[semantic versioning](http://semver.org/) in best case). Snapshot releases use the same versioning scheme but add
+a `-SNAPSHOT` suffix. A snapshot release prepares the production release with the same prefix. Whereas a 
+production release denotes a immutable version with certain assertion like QA process or semantic versioning the 
+snapshot release can be assigned to multiple versions as floating tag.
 
 ### Publish Snapshot Artefacts
 
+Artifact build on a snapshot version can be deployed to the [Sonatype snapshot repository](
+https://oss.sonatype.org/content/repositories/snapshots/) but will not be synchronized to Maven Central. The 
+version in the `pom.yml` will not be changed and no tag at GitHub will be set. For the artifacts stored in the 
+repository the `-SNAPSHOT` suffix will be replaced with a timestamp. Maven references the latest timestamp for a 
+given `SNAPSHOT` automatically.
+
+For snapshot releases the default Maven process is used. The snapshot repository is configured under 
+`distributionManagement` which will be looked up by the `maven-deploy-plugin`.
+    
 To deploy a snapshot version run:
 ```bash
 JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn clean deploy
@@ -346,17 +357,70 @@ JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn clean deploy
 
 ### Publish Release Artefacts
 
-There are multiple steps to issue a release:
+To issue a production release some more steps are required as it must be switched from current snapshot version to 
+a production release version (remove the `-SNAPSHOT` suffix) and the next snapshots version must be bumped. 
+Additionally there may be rules like reviews and QA for the release process as for Maven Central. The QA is based 
+on the final release artifacts and can not be done before having the release artifacts available. But if the QA 
+fails the release artifacts should not be published.
 
-1. Run `JAVA_HOME=$(/usr/libexec/java_home -v 1.8)  mvn clean release:prepare`. This removes the current
-   `-SNAPSHOT` suffix from the project version, commit and tag the code on GitHub. Then the project version is set
-   to next snapshot version. For `1.0.0-SNAPSHOT` the project version mutates to `1.0.0` and finally to
-   `1.1.0-SNAPSHOT`.
-2. Run `mvn release:perform`. This creates the binary artifact, sign the artifact with a GPG key and publish the
-   artifact to the Sonatype Open Source Software Repository Hosting (OSSRH) which will be synchronized to Maven
-   central.
+For this reason it's not possible to publish into the Maven Central repository directly. Rather you have to 
+publish your production release artifacts into the Sonatype Open Source Software Repository Hosting (OSSRH). The
+OSSRH make use of [staging releases](https://help.sonatype.com/repomanager2/staging-releases) as a Nexus 
+Repository Pro feature. A staging release is a temporary staging repository with the artifacts of a release 
+candidate. The release candidate artifacts can be reviewed and discarded or promoted to the final release 
+repository. Only the final release repository will be synchronized to the Maven Central Repository.
 
-To switch to a new major version you have to edit the POM manually.
+This makes it difficult to deploy production release artefacts to Maven Central using the `maven-deploy-plugin`.
+Nexus introduces the `nexus-staging-maven-plugin` for this case([reference](
+https://help.sonatype.com/repomanager2/staging-releases/configuring-your-project-for-deployment#ConfiguringYourProjectforDeployment-DeploymentwiththeNexusStagingMavenPlugin
+)). Unfortunately the `nexus-staging-maven-plugin` does not recognize the `distributionManagement`. So the URL of 
+the OSSRH repository must be configured with the plugin configuration (as shown above).
+
+To deploy a production version run:
+```bash
+git diff-index --quiet HEAD -- || echo 'There are local modifications!'
+sed -i '' -E 's/^(version: ([0-9]{1,}\.){1,}[0-9]{1,})(.*)/\1/' pom.yml
+grep '\-SNAPSHOT' pom.yml && echo 'There are SNAPSHOT dependencies!'
+JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn test
+JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn site-deploy
+git add pom.yml
+git commit -m 'Create production release'
+git push
+git tag "v$(grep '^version:' pom.yml|sed -E 's/^version: (.*)/\1/')"
+git push origin "v$(grep '^version:' pom.yml|sed -E 's/^version: (.*)/\1/')"
+JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn deploy
+# Change version number to next relase manually.
+sed -i '' -E 's/^version: .*/&-SNAPSHOT/' pom.yml
+git add pom.yml
+git commit -m 'Bump to next snapshot release'
+git push
+```
+
+### The disqualification of the maven-release-plugin
+
+The `maven-release-plugin` does not work together with polyglot Maven([reference](
+https://github.com/takari/polyglot-maven#limited-plugin-support)).
+
+There is the criticism the `maven-release-plugin` tries to make things simpler than they are([reference](
+https://dzone.com/articles/why-i-never-use-maven-release)). A release process has a intrinsic complexity which can 
+not be eliminated by a tool.
+
+Releases have to be carefully planned. They have to be announced and there may be strategies required to handle 
+incompatible changes. And there may be tradeoffs to be considered (e.g tollerate downtimes vs. migration costs).
+Last but not least multiple conventions apply (like semantic versioning) and a QA process is required.
+
+So what you want to do would be probably something like this:
+
+1. Checkout a clean copy of the current `master` branch.
+2. Ensure there are no local modifications.
+3. Remove the `-SNAPSHOT` suffix from the version in the POM. Commit and push the changes.
+4. Ensure there are no other snapshot dependencies as they are floating tags and you can't guarantee the released
+   software will later behave as you tested.
+5. Run tests.
+6. Build and publish the project website.
+7. Tag a GitHub release.
+8. Upload the production release artifacts to the production release repository.
+9. Bump to a new snapshot version. Commit and push the changes.
 
 ### Links
 
