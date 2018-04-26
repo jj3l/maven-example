@@ -147,3 +147,11 @@ distributionManagement:
   snapshotRepository:
     id: ossrh
     url: https://oss.sonatype.org/content/repositories/snapshots
+reporting:
+  excludeDefaults: false
+  plugins:
+  - artifactId: versions-maven-plugin
+    groupId: org.codehaus.mojo
+    version: '2.1'
+    inherited: true
+    
