@@ -34,24 +34,67 @@ dependencies:
   version: 3.8.1
   scope: test
 build:
+  pluginManagement:
+    plugins:
+    - artifactId: maven-antrun-plugin
+      version: 1.8
+    - artifactId: maven-assembly-plugin 
+      version: 2.6
+    - artifactId: maven-clean-plugin
+      version: 2.6.1
+    - artifactId: maven-compiler-plugin
+      version: 3.3
+    - artifactId: maven-dependency-plugin 
+      version: 2.10
+    - artifactId: maven-deploy-plugin
+      version: 2.8.2
+    - artifactId: maven-enforcer-plugin
+      version: 3.0.0-M1
+    - artifactId: maven-gpg-plugin
+      version: 1.6
+    - artifactId: maven-install-plugin
+      version: 2.5.2
+    - artifactId: maven-jar-plugin
+      version: 2.6
+    - artifactId: maven-javadoc-plugin
+      version: 2.10.3
+    - artifactId: maven-project-info-reports-plugin
+      version: 2.8.1
+    - artifactId: maven-release-plugin
+      version: 2.5.3
+    - artifactId: maven-resources-plugin
+      version: 2.7
+    - artifactId: maven-site-plugin
+      version: 3.6
+    - artifactId: maven-source-plugin
+      version: 3.0.1
+    - artifactId: maven-surefire-plugin
+      version: 2.19
+    - groupId: com.github.github
+      artifactId: site-maven-plugin
+      version: 0.12
+    - groupId: org.codehaus.mojo
+      artifactId: license-maven-plugin
+      version: 1.16
+    - groupId: org.owasp
+      artifactId: dependency-check-maven
+      version: 3.0.2
+    - groupId: org.sonatype.plugins
+      artifactId: nexus-staging-maven-plugin
+      version: 1.6.8
+    - groupId: org.codehaus.mojo
+      artifactId: versions-maven-plugin
+      version: '2.2'
   plugins:
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-project-info-reports-plugin
-    version: 2.8.1
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-compiler-plugin
-    version: 3.1
+  - artifactId: maven-compiler-plugin
     configuration:
       source: 1.6
       target: 1.6
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-site-plugin
-    version: 3.6
+  - artifactId: maven-site-plugin
     configuration:
       skipDeploy: true
   - groupId: com.github.github
     artifactId: site-maven-plugin
-    version: 0.12
     executions:
     - goals:
       - site
@@ -59,23 +102,17 @@ build:
       configuration:
         server: github
         message: Create project website for ${project.version}.
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-source-plugin
-    version: 3.0.1
+  - artifactId: maven-source-plugin
     executions:
     - id: attach-sources
       goals:
       - jar
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-javadoc-plugin
-    version: 2.10.3
+  - artifactId: maven-javadoc-plugin
     executions:
     - id: attach-javadocs
       goals:
       - jar
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-enforcer-plugin
-    version: 3.0.0-M1
+  - artifactId: maven-enforcer-plugin
     executions:
     - id: no-duplicate-declared-dependencies
       goals:
@@ -91,13 +128,11 @@ build:
           dependencyConvergence: ''
   - groupId: org.owasp
     artifactId: dependency-check-maven
-    version: 3.0.2
     executions:
     - goals:
       - check
   - groupId: org.codehaus.mojo
     artifactId: license-maven-plugin
-    version: 1.14
     configuration:
       licenseName: apache_v2
       addJavaLicenseAfterPackage: false
@@ -118,9 +153,7 @@ build:
     - id: second
       goals:
       - update-project-license
-  - groupId: org.apache.maven.plugins
-    artifactId: maven-gpg-plugin
-    version: 1.6
+  - artifactId: maven-gpg-plugin
     executions:
     - id: sign-artifacts
       phase: verify
@@ -131,7 +164,6 @@ build:
         passphraseServerId: ${gpg.keyname}
   - groupId: org.sonatype.plugins
     artifactId: nexus-staging-maven-plugin
-    version: 1.6.7
     extensions: true
     configuration:
       serverId: ossrh
@@ -152,6 +184,5 @@ reporting:
   plugins:
   - artifactId: versions-maven-plugin
     groupId: org.codehaus.mojo
-    version: '2.1'
     inherited: true
     
