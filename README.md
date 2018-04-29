@@ -454,6 +454,10 @@ git commit -m 'Bump to next snapshot release'
 git push
 ```
 
+Login at https://oss.sonatype.org/ with your Sonatype Jira credentials. Go to [stagingRepositories](
+https://oss.sonatype.org/#stagingRepositories), select your distributes staging repository and click `Release` 
+button.
+
 ### The disqualification of the maven-release-plugin
 
 The `maven-release-plugin` does not work together with polyglot Maven([reference](
