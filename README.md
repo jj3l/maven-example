@@ -208,6 +208,48 @@ It would be appreciated to remove `processStartTag`, `processEndTag` and `sectio
 first section is not required). Trailing spaces should be removed. A `LICENSE.md` would be preferred over 
 `LICENSE.txt`. The placeholder `Copyright [yyyy] [name of copyright owner]` will not be replaced.
 
+## Use jUnit 5
+
+To switch from [jUnit 4](https://junit.org/junit4/) to [jUnit 5](https://junit.org/junit5/) replace
+
+```yml
+dependencies:
+-- groupId: junit
+   artifactId: junit
+   version: 4.12
+```
+
+by
+
+```yml
+dependencies:
+- groupId: org.junit.jupiter
+  artifactId: junit-jupiter-api
+  version: 5.1.1
+  scope: test
+```
+
+in your POM. And add required dependencies to the `maven-surefire-plugin`:
+
+```yml
+build:
+  pluginManagement:
+    plugins:
+    - artifactId: maven-surefire-plugin
+      version: 2.19.1
+      dependencies:
+      - groupId: org.junit.platform
+        artifactId: junit-platform-surefire-provider
+        version: 1.1.1
+      - groupId: org.junit.jupiter
+        artifactId: junit-jupiter-engine
+        version: 5.1.1
+```
+
+Links:
+
+* https://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven
+
 ## Release process
 
 One of the most powerful features of Maven is the repository concept to store packaged Java artefacts like JAR
