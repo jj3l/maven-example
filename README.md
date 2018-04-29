@@ -383,8 +383,8 @@ need to be met.
        </profiles>
      </settings>
      ```
-     You can sign explicitly by running `JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn clean verify` but you will
-     sign regularly implicit using `JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn release:perform` later.
+     You can sign explicitly by running `JAVA_HOME=$(/usr/libexec/java_home -v 10) mvn clean verify` but you will
+     sign regularly implicit using `JAVA_HOME=$(/usr/libexec/java_home -v 10) mvn release:perform` later.
      You will find the generated signatures in `target/maven-example-*.*.asc`.
 3. Using [semantic versioning](http://semver.org/) is not required but [recommended](
    http://central.sonatype.org/pages/choosing-your-coordinates.html).
@@ -410,7 +410,7 @@ For snapshot releases the default Maven process is used. The snapshot repository
     
 To deploy a snapshot version run:
 ```bash
-JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn clean deploy
+JAVA_HOME=$(/usr/libexec/java_home -v 10) mvn clean deploy
 ```
 
 ### Publish Release Artefacts
@@ -439,14 +439,14 @@ To deploy a production version run:
 git diff-index --quiet HEAD -- || echo 'There are local modifications!'
 sed -i '' -E 's/^(version: ([0-9]{1,}\.){1,}[0-9]{1,})(.*)/\1/' pom.yml
 grep '\-SNAPSHOT' pom.yml && echo 'There are SNAPSHOT dependencies!'
-JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn test
-JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn site-deploy
+JAVA_HOME=$(/usr/libexec/java_home -v 10) mvn test
+JAVA_HOME=$(/usr/libexec/java_home -v 10) mvn site-deploy
 git add pom.yml
 git commit -m 'Create production release'
 git push
 git tag "v$(grep '^version:' pom.yml|sed -E 's/^version: (.*)/\1/')"
 git push origin "v$(grep '^version:' pom.yml|sed -E 's/^version: (.*)/\1/')"
-JAVA_HOME=$(/usr/libexec/java_home -v 1.8) mvn deploy
+JAVA_HOME=$(/usr/libexec/java_home -v 10) mvn deploy
 # Change version number to next relase manually.
 sed -i '' -E 's/^version: .*/&-SNAPSHOT/' pom.yml
 git add pom.yml
