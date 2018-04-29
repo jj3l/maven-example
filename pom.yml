@@ -60,6 +60,17 @@ build:
       version: 3.0.0
     - artifactId: maven-project-info-reports-plugin
       version: 2.8.1
+      # https://github.com/RichardWarburton/lambda-behave/issues/31#issuecomment-86052095
+      dependencies:
+      - groupId: org.apache.maven.shared
+        artifactId: maven-shared-jar
+        version: 1.1
+        exclusions:
+        - groupId: org.apache.bcel
+          artifactId: bcel
+      - groupId: com.google.code.findbugs
+        artifactId: bcel-findbugs
+        version: 6.0
     - artifactId: maven-release-plugin
       version: 2.5.3
     - artifactId: maven-resources-plugin
