@@ -659,3 +659,35 @@ Reports available updates of Properties, Plugins and Dependencies.
 
 Run tests at CircleCI. See [`.circleci/config.yml`](https://circleci.com/docs/2.0/configuration-reference/) for 
 CircleCI configuration.
+
+## Run the app as modular JAR
+
+```bash
+java \
+--module-path target/maven-example-1.1.0-SNAPSHOT.jar \
+-m com.github.jj3l.maven.example/com.github.jj3l.maven.example.App
+``
+
+## Create a Custom-Runtime-Image and run the app as jImage
+
+Create Custom-Runtime-Image:
+
+```bash
+$(/usr/libexec/java_home -v 10)/bin/jlink \
+--module-path target/maven-example-1.1.0-SNAPSHOT.jar \
+--add-modules com.github.jj3l.maven.example \
+--launcher app=com.github.jj3l.maven.example/com.github.jj3l.maven.example.App \
+--strip-debug \
+--compress=2 \
+--output target/maven-example-1.1.0-SNAPSHOT
+```
+
+Run the app:
+
+```bash
+target/maven-example-1.1.0-SNAPSHOT/bin/app
+```
+
+There is a [Maven plugin](https://maven.apache.org/plugins/maven-jlink-plugin/) to create [Modular Runtime 
+Images](http://openjdk.java.net/jeps/220). The plugin has alpha status currently and need a multi module build.
+
