@@ -97,6 +97,12 @@ build:
     configuration:
       source: 10
       target: 10
+      release: 10
+    # workaround for https://issues.apache.org/jira/browse/MCOMPILER-332?page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel&focusedCommentId=16411933#comment-16411933
+    dependencies:
+    - groupId: org.ow2.asm
+      artifactId: asm
+      version: 6.1
   - artifactId: maven-site-plugin
     configuration:
       skipDeploy: true
