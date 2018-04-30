@@ -31,7 +31,7 @@ properties:
 dependencies:
 - groupId: org.junit.jupiter
   artifactId: junit-jupiter-api
-  version: 5.1.1
+  version: 5.2.0
   scope: test
 build:
   pluginManagement:
@@ -80,14 +80,17 @@ build:
     - artifactId: maven-source-plugin
       version: 3.0.1
     - artifactId: maven-surefire-plugin
-      version: 2.19.1
+      version: 2.21.0
       dependencies:
       - groupId: org.junit.platform
         artifactId: junit-platform-surefire-provider
-        version: 1.1.1
+        version: 1.2.0
       - groupId: org.junit.jupiter
         artifactId: junit-jupiter-engine
-        version: 5.1.1
+        version: 5.2.0
+      - groupId: org.ow2.asm
+        artifactId: asm
+        version: 6.1.1
     - groupId: com.github.github
       artifactId: site-maven-plugin
       version: 0.12
@@ -106,14 +109,12 @@ build:
   plugins:
   - artifactId: maven-compiler-plugin
     configuration:
-      source: 10
-      target: 10
       release: 10
     # workaround for https://issues.apache.org/jira/browse/MCOMPILER-332?page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel&focusedCommentId=16411933#comment-16411933
     dependencies:
     - groupId: org.ow2.asm
       artifactId: asm
-      version: 6.1
+      version: 6.1.1
   - artifactId: maven-site-plugin
     configuration:
       skipDeploy: true
@@ -214,7 +215,8 @@ distributionManagement:
 reporting:
   excludeDefaults: false
   plugins:
+  - artifactId: maven-project-info-reports-plugin
+    groupId: org.apache.maven.plugins
   - artifactId: versions-maven-plugin
     groupId: org.codehaus.mojo
     inherited: true
-    
