@@ -44,20 +44,60 @@ build:
       version: 2.6.1
     - artifactId: maven-compiler-plugin
       version: 3.7.0
+      configuration:
+        release: 10
+      # workaround for https://issues.apache.org/jira/browse/MCOMPILER-332?page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel&focusedCommentId=16411933#comment-16411933
+      dependencies:
+      - groupId: org.ow2.asm
+        artifactId: asm
+        version: 6.1.1
     - artifactId: maven-dependency-plugin 
       version: 2.10
     - artifactId: maven-deploy-plugin
       version: 2.8.2
     - artifactId: maven-enforcer-plugin
       version: 3.0.0-M1
+      executions:
+      - id: no-duplicate-declared-dependencies
+        goals:
+        - enforce
+        configuration:
+          rules:
+            banDuplicatePomDependencyVersions: ''
+      - id: enforce
+        goals:
+        - enforce
+        configuration:
+          rules:
+            dependencyConvergence: ''
     - artifactId: maven-gpg-plugin
       version: 1.6
+      executions:
+      - id: sign-artifacts
+        phase: verify
+        goals:
+        - sign
+        configuration:
+          keyname: ${gpg.keyname}
+          passphraseServerId: ${gpg.keyname}
     - artifactId: maven-install-plugin
       version: 2.5.2
     - artifactId: maven-jar-plugin
       version: 3.0.2
     - artifactId: maven-javadoc-plugin
       version: 3.0.0
+      # To fix https://stackoverflow.com/questions/49460751/execution-attach-javadocs-of-goal-org-apache-maven-pluginsmaven-javadoc-plugin
+      dependencies:
+      - groupId: org.apache.commons
+        artifactId: commons-lang3
+        version: 3.7
+      configuration:
+        additionalOptions:
+        - -html5
+      executions:
+      - id: attach-javadocs
+        goals:
+        - jar
     - artifactId: maven-project-info-reports-plugin
       version: 2.8.1
       # https://github.com/RichardWarburton/lambda-behave/issues/31#issuecomment-86052095
@@ -77,8 +117,14 @@ build:
       version: 2.7
     - artifactId: maven-site-plugin
       version: 3.7
+      configuration:
+        skipDeploy: true
     - artifactId: maven-source-plugin
       version: 3.0.1
+      executions:
+      - id: attach-sources
+        goals:
+        - jar
     - artifactId: maven-surefire-plugin
       version: 2.21.0
       dependencies:
@@ -94,116 +140,68 @@ build:
     - groupId: com.github.github
       artifactId: site-maven-plugin
       version: 0.12
+      executions:
+      - goals:
+        - site
+        phase: site-deploy
+        configuration:
+          server: github
+          message: Create project website for ${project.version}.
     - groupId: org.codehaus.mojo
       artifactId: license-maven-plugin
       version: 1.16
+      configuration:
+        licenseName: apache_v2
+        addJavaLicenseAfterPackage: false
+        canUpdateCopyright: true
+        canUpdateDescription: true
+        canUpdateLicense: true
+        emptyLineAfterHeader: true
+        extraFiles:
+          DockerFile: properties
+        processStartTag: 'LICENSE_START'
+        processEndTag: 'LICENSE_END'
+        sectionDelimiter: 'xx'
+      executions:
+      - id: first
+        goals:
+        - update-file-header
+        phase: process-sources
+      - id: second
+        goals:
+        - update-project-license
     - groupId: org.owasp
       artifactId: dependency-check-maven
       version: 3.0.2
+      executions:
+      - goals:
+        - check
     - groupId: org.sonatype.plugins
       artifactId: nexus-staging-maven-plugin
       version: 1.6.8
+      extensions: true
+      configuration:
+        serverId: ossrh
+        nexusUrl: https://oss.sonatype.org/
+        autoReleaseAfterClose: false
     - groupId: org.codehaus.mojo
       artifactId: versions-maven-plugin
       version: '2.2'
   plugins:
   - artifactId: maven-compiler-plugin
-    configuration:
-      release: 10
-    # workaround for https://issues.apache.org/jira/browse/MCOMPILER-332?page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel&focusedCommentId=16411933#comment-16411933
-    dependencies:
-    - groupId: org.ow2.asm
-      artifactId: asm
-      version: 6.1.1
+  - artifactId: maven-enforcer-plugin
+  - artifactId: maven-gpg-plugin
+  - artifactId: maven-javadoc-plugin
   - artifactId: maven-site-plugin
-    configuration:
-      skipDeploy: true
+  - artifactId: maven-source-plugin
   - groupId: com.github.github
     artifactId: site-maven-plugin
-    executions:
-    - goals:
-      - site
-      phase: site-deploy
-      configuration:
-        server: github
-        message: Create project website for ${project.version}.
-  - artifactId: maven-source-plugin
-    executions:
-    - id: attach-sources
-      goals:
-      - jar
-  - artifactId: maven-javadoc-plugin
-    # To fix https://stackoverflow.com/questions/49460751/execution-attach-javadocs-of-goal-org-apache-maven-pluginsmaven-javadoc-plugin
-    dependencies:
-    - groupId: org.apache.commons
-      artifactId: commons-lang3
-      version: 3.7
-    configuration:
-      additionalOptions:
-      - -html5
-    executions:
-    - id: attach-javadocs
-      goals:
-      - jar
-  - artifactId: maven-enforcer-plugin
-    executions:
-    - id: no-duplicate-declared-dependencies
-      goals:
-      - enforce
-      configuration:
-        rules:
-          banDuplicatePomDependencyVersions: ''
-    - id: enforce
-      goals:
-      - enforce
-      configuration:
-        rules:
-          dependencyConvergence: ''
-  - groupId: org.owasp
-    artifactId: dependency-check-maven
-    executions:
-    - goals:
-      - check
   - groupId: org.codehaus.mojo
     artifactId: license-maven-plugin
-    configuration:
-      licenseName: apache_v2
-      addJavaLicenseAfterPackage: false
-      canUpdateCopyright: true
-      canUpdateDescription: true
-      canUpdateLicense: true
-      emptyLineAfterHeader: true
-      extraFiles:
-        DockerFile: properties
-      processStartTag: 'LICENSE_START'
-      processEndTag: 'LICENSE_END'
-      sectionDelimiter: 'xx'
-    executions:
-    - id: first
-      goals:
-      - update-file-header
-      phase: process-sources
-    - id: second
-      goals:
-      - update-project-license
-  - artifactId: maven-gpg-plugin
-    executions:
-    - id: sign-artifacts
-      phase: verify
-      goals:
-      - sign
-      configuration:
-        keyname: ${gpg.keyname}
-        passphraseServerId: ${gpg.keyname}
+  - groupId: org.owasp
+    artifactId: dependency-check-maven
   - groupId: org.sonatype.plugins
     artifactId: nexus-staging-maven-plugin
-    extensions: true
-    configuration:
-      serverId: ossrh
-      nexusUrl: https://oss.sonatype.org/
-      autoReleaseAfterClose: false
-# Required by com.github.github:github-maven-plugins-parent
-# https://github.com/github/maven-plugins/blob/master/pom.xml
 repositories:
 - id: egit
   name: Eclipse egit
