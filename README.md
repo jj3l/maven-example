@@ -250,6 +250,24 @@ Links:
 
 * https://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven
 
+## Switch to Java 10
+
+You can use `release` instead of `source` and `target` to configure the Java version for the `maven-compiler-plugin` 
+now. Unfortunately the latest release v3.7.0 of the `maven-compiler-plugin` is from 2017-09-01. To work with Java 10
+a newer version of the `asm` dependency must be configured explicitly to workaround this [bug](
+https://issues.apache.org/jira/browse/MCOMPILER-332?page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel&focusedCommentId=16411933#comment-16411933).
+
+```yml
+- artifactId: maven-compiler-plugin
+  version: 3.7.0
+  configuration:
+    release: 10
+  dependencies:
+  - groupId: org.ow2.asm
+    artifactId: asm
+    version: 6.2
+```
+
 ## Release process
 
 One of the most powerful features of Maven is the repository concept to store packaged Java artefacts like JAR
