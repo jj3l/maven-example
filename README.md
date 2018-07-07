@@ -29,7 +29,7 @@ mvn \
   -Dinput=pom.xml \
   -Doutput=pom.yml
 rm pom.xml
-mkdir -p .svn
+mkdir -p .mvn
 cat << 'EOF' > .mvn/extensions.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <extensions>
