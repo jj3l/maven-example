@@ -104,7 +104,7 @@ build:
       dependencies:
       - groupId: org.apache.maven.shared
         artifactId: maven-shared-jar
-        version: 1.1
+        version: 1.2
         exclusions:
         - groupId: org.apache.bcel
           artifactId: bcel
