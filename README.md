@@ -717,4 +717,3 @@ target/maven-example-1.1.0-SNAPSHOT/bin/app
 
 There is a [Maven plugin](https://maven.apache.org/plugins/maven-jlink-plugin/) to create [Modular Runtime 
 Images](http://openjdk.java.net/jeps/220). The plugin has alpha status currently and need a multi module build.
-
