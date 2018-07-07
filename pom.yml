@@ -1,7 +1,7 @@
 modelVersion: 4.0.0
 groupId: com.github.jj3l
 artifactId: maven-example
-version: 1.3.0-SNAPSHOT
+version: 1.3.0
 packaging: jar
 name: maven-example
 description: This is an example project to demonstrate Maven usage and configuration.
