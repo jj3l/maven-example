@@ -126,7 +126,7 @@ build:
         goals:
         - jar
     - artifactId: maven-surefire-plugin
-      version: 2.21.0
+      version: 2.22.0
       dependencies:
       - groupId: org.junit.platform
         artifactId: junit-platform-surefire-provider
