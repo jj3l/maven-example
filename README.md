@@ -247,8 +247,13 @@ build:
 ```
 
 Links:
-
 * https://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven
+
+Note: To run the Tests in Eclipse with a module descriptor present it's required to add jUnit to the classpath in the 
+Eclipse project. Eclipse provides a jUnit library for this (jUnit v5.1.0 currently).
+* Right click on Project, select "Build Path" -> "Add Libraries..." -> "JUnit" -> Click "Next". Select "JUnit 
+  library version": "JUnit 5". Eclipse will no longer show compile errors for the test class.
+* Right click on Project, select "Run As" -> "JUnit Test". Will be successful.
 
 ## Switch to Java 10
 
